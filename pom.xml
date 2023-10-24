@@ -16,8 +16,8 @@
 	</properties>
 	<developers>
     		<developer>
-      		<id>burak</id>
-      		<email>burak@antmedia.io</email>
+      		<id>Vadim</id>
+      		<email>vadim.kurnatovskiy@flatstack.com</email>
     		</developer>
   	</developers>
   	<licenses>
@@ -160,6 +160,11 @@
 			<artifactId>ant-media-server</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.java-websocket</groupId>
+			<artifactId>Java-WebSocket</artifactId>
+			<version>1.5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
