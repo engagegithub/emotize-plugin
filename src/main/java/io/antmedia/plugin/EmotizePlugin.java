@@ -70,6 +70,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 		if (apiToken == null) {
 			logger.info("ASSEMBLY_API_TOKEN environment variable is not set.");
+			return;
 		}
 		try {
 			URI wssUri = new URI("wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000");
