@@ -11,7 +11,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -38,15 +37,10 @@ public class RestService {
 	@Path("/{id}/start")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response start(@Context UriInfo uriInfo, @PathParam("id") String id) {
-		if (uriInfo == null) {
-			return Response.status(Status.BAD_REQUEST).entity("").build();
-		}
-
-		String host = uriInfo.getBaseUri().getHost();
+	public Response start(@PathParam("id") String id) {
 		EmotizePlugin app = getPluginApp();
 
-		app.start(id, host);
+		app.start(id);
 
 		return Response.status(Status.OK).entity("").build();
 	}

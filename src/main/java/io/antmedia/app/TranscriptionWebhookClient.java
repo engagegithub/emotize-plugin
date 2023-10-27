@@ -8,12 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TranscriptionWebhookClient {
-  private String host;
   private String streamId;
   protected static Logger logger = LoggerFactory.getLogger(AudioFrameListener.class);
+  private static String host = System.getenv("EMOTIZE_HOST");
 
-  public TranscriptionWebhookClient(String host, String streamId) {
-    this.host = host;
+  public TranscriptionWebhookClient(String streamId) {
     this.streamId = streamId;
   }
 
@@ -36,7 +35,7 @@ public class TranscriptionWebhookClient {
 
         logger.info("***emotizeplugin*** Obtaining webhook request. Code: " + connection.getResponseCode());
       } catch (Exception e) {
-      logger.info("***emotizeplugin*** Failed to obtain request. Ex: " + e);
+      logger.error("***emotizeplugin*** Failed to obtain request. Ex: " + e);
     }
   }
 }

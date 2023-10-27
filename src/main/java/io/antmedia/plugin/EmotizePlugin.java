@@ -65,7 +65,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 		return selectedMuxAdaptor;
 	}
 
-	public void start(String streamId, String host) {
+	public void start(String streamId) {
 		AntMediaApplicationAdapter app = getApplication();
 
 		if (apiToken == null) {
@@ -77,11 +77,12 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 			Map<String, String> httpHeaders = new HashMap<String, String>();
 			httpHeaders.put("Authorization", apiToken);
 
-			logger.info("***emotizeplugin*** host: {}", host);
-
-			this.webhookClient = new TranscriptionWebhookClient(host, streamId);
+			this.webhookClient = new TranscriptionWebhookClient(streamId);
 			this.wssClient = new AssemblyClient(wssUri, httpHeaders, webhookClient);
 			wssClient.connect();
+
+			String ping_message = "{\"message_type\":\"FinalTranscript\",\"audio_start\":0,\"audio_end\":1500,\"text\":\"ping\"}";
+			webhookClient.sendRequest(ping_message);
 
 			this.frameListener = new AudioFrameListener(wssClient);
 
