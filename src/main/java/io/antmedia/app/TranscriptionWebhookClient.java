@@ -7,12 +7,12 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WebhookClient {
+public class TranscriptionWebhookClient {
   private String host;
   private String streamId;
   protected static Logger logger = LoggerFactory.getLogger(AudioFrameListener.class);
 
-  public WebhookClient(String host, String streamId) {
+  public TranscriptionWebhookClient(String host, String streamId) {
     this.host = host;
     this.streamId = streamId;
   }
@@ -34,9 +34,9 @@ public class WebhookClient {
           os.write(messageBytes, 0, messageBytes.length);
         }
 
-        logger.info("Obtaining webhook request. Code: " + connection.getResponseCode());
+        logger.info("***emotizeplugin*** Obtaining webhook request. Code: " + connection.getResponseCode());
       } catch (Exception e) {
-      logger.info("Failed to obtain request. Ex: " + e);
+      logger.info("***emotizeplugin*** Failed to obtain request. Ex: " + e);
     }
   }
 }

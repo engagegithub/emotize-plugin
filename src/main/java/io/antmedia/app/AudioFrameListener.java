@@ -38,22 +38,22 @@ public class AudioFrameListener implements IFrameListener{
 
 	@Override
 	public void writeTrailer(String streamId) {
-		logger.info("SampleFrameListener.writeTrailer() for streamId:{}", streamId);
+		logger.info("***emotizeplugin*** AudioFrameListener.writeTrailer() for streamId:{}", streamId);
 	}
 
 	@Override
 	public void setVideoStreamInfo(String streamId, StreamParametersInfo videoStreamInfo) {
-		logger.info("SampleFrameListener.setVideoStreamInfo() for streamId:{}", streamId);
+		logger.info("***emotizeplugin*** AudioFrameListener.setVideoStreamInfo() for streamId:{}", streamId);
 	}
 
 	@Override
 	public void setAudioStreamInfo(String streamId, StreamParametersInfo audioStreamInfo) {
-		logger.info("SampleFrameListener.setAudioStreamInfo() for streamId:{}", streamId);
+		logger.info("***emotizeplugin*** AudioFrameListener.setAudioStreamInfo() for streamId:{}", streamId);
 	}
 
 	@Override
 	public void start() {
-		logger.info("SampleFrameListener.start()");
+		logger.info("***emotizeplugin*** AudioFrameListener.start()");
 	}
 
 	public String getStats() {
@@ -76,6 +76,8 @@ public class AudioFrameListener implements IFrameListener{
 			String jsonString = json.toString();
 
 			wssClient.send(jsonString);
+		} else {
+			logger.info("***emotizeplugin*** EMPTY avFrame");
 		}
 	}
 }

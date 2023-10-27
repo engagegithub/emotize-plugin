@@ -3,7 +3,7 @@ package io.antmedia.plugin;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import io.antmedia.AntMediaApplicationAdapter;
 import io.antmedia.app.AssemblyClient;
 import io.antmedia.app.AudioFrameListener;
-import io.antmedia.app.WebhookClient;
+import io.antmedia.app.TranscriptionWebhookClient;
 import io.antmedia.muxer.MuxAdaptor;
 import io.antmedia.plugin.api.IFrameListener;
 import io.antmedia.plugin.api.IStreamListener;
@@ -32,7 +32,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 	private Vertx vertx;
 	private AudioFrameListener frameListener;
 	private AssemblyClient wssClient;
-	private WebhookClient webhookClient;
+	private TranscriptionWebhookClient webhookClient;
 	private ApplicationContext applicationContext;
 
 	@Override
@@ -51,7 +51,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 		if(application != null)
 		{
-			List<MuxAdaptor> muxAdaptors = application.getMuxAdaptors();
+			Collection<MuxAdaptor> muxAdaptors = application.getMuxAdaptors();
 			for (MuxAdaptor muxAdaptor : muxAdaptors)
 			{
 				if (streamId.equals(muxAdaptor.getStreamId()))
@@ -69,7 +69,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 		AntMediaApplicationAdapter app = getApplication();
 
 		if (apiToken == null) {
-			logger.info("ASSEMBLY_API_TOKEN environment variable is not set.");
+			logger.info("***emotizeplugin*** ASSEMBLY_API_TOKEN environment variable is not set.");
 			return;
 		}
 		try {
@@ -77,7 +77,9 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 			Map<String, String> httpHeaders = new HashMap<String, String>();
 			httpHeaders.put("Authorization", apiToken);
 
-			this.webhookClient = new WebhookClient(host, streamId);
+			logger.info("***emotizeplugin*** host: {}", host);
+
+			this.webhookClient = new TranscriptionWebhookClient(host, streamId);
 			this.wssClient = new AssemblyClient(wssUri, httpHeaders, webhookClient);
 			wssClient.connect();
 
@@ -85,7 +87,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 			app.addFrameListener(streamId, frameListener);
 		} catch (URISyntaxException e) {
-			logger.error("URI syntax error: " + e.getMessage());
+			logger.error("***emotizeplugin*** URI syntax error: " + e.getMessage());
 			return;
 		}
 	}
@@ -105,21 +107,21 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 	@Override
 	public void streamStarted(String streamId) {
-		logger.info("*************** Stream Started: {} ***************", streamId);
+		logger.info("***************emotizeplugin Stream Started: {} ***************", streamId);
 	}
 
 	@Override
 	public void streamFinished(String streamId) {
-		logger.info("*************** Stream Finished: {} ***************", streamId);
+		logger.info("***************emotizeplugin Stream Finished: {} ***************", streamId);
 	}
 
 	@Override
 	public void joinedTheRoom(String roomId, String streamId) {
-		logger.info("*************** Stream Id:{} joined the room:{} ***************", streamId, roomId);
+		logger.info("***************emotizeplugin Stream Id:{} joined the room:{} ***************", streamId, roomId);
 	}
 
 	@Override
 	public void leftTheRoom(String roomId, String streamId) {
-		logger.info("*************** Stream Id:{} left the room:{} ***************", streamId, roomId);
+		logger.info("***************emotizeplugin Stream Id:{} left the room:{} ***************", streamId, roomId);
 	}
 }

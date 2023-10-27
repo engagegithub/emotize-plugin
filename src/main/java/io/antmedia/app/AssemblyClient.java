@@ -14,7 +14,7 @@ public class AssemblyClient extends WebSocketClient {
   protected static Logger logger = LoggerFactory.getLogger(AssemblyClient.class);
   private static final int CLOSE_CODE_RECONNECT = 4031;
 
-  private WebhookClient webhookClient;
+  private TranscriptionWebhookClient webhookClient;
 
   public AssemblyClient(URI serverUri, Draft draft) {
     super(serverUri, draft);
@@ -24,7 +24,7 @@ public class AssemblyClient extends WebSocketClient {
     super(serverURI);
   }
 
-  public AssemblyClient(URI serverUri, Map<String, String> httpHeaders, WebhookClient webhookClient) {
+  public AssemblyClient(URI serverUri, Map<String, String> httpHeaders, TranscriptionWebhookClient webhookClient) {
     super(serverUri, httpHeaders);
 
     this.webhookClient = webhookClient;
@@ -32,16 +32,17 @@ public class AssemblyClient extends WebSocketClient {
 
   @Override
   public void onOpen(ServerHandshake handshakedata) {
-    logger.info("Connected to AssemblyAI WebSocket");
+    logger.info("***emotizeplugin*** Connected to AssemblyAI WebSocket");
   }
 
   @Override
   public void onMessage(String message) {
-    logger.info("received: " + message);
+    logger.info("***emotizeplugin*** received: " + message);
 
     if (message.contains("SessionBegins")) {
-      logger.info("Real time transcription is starting");
+      logger.info("***emotizeplugin*** Real time transcription is starting");
     } else if (message.contains("FinalTranscript")) {
+      logger.info("***emotizeplugin*** Get transcript from AssemblyAI");
       webhookClient.sendRequest(message);
     }
   }
@@ -49,10 +50,10 @@ public class AssemblyClient extends WebSocketClient {
   @Override
   public void onClose(int code, String reason, boolean remote) {
     // The close codes are documented in class org.java_websocket.framing.CloseFrame
-    logger.info("Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason);
+    logger.info("***emotizeplugin*** Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason);
 
     if (code == CLOSE_CODE_RECONNECT) {
-      logger.info("Reconnecting to WebSocket...");
+      logger.info("***emotizeplugin*** Reconnecting to WebSocket...");
 
       this.reconnect(); // Reconnect if the close code is 4031
     }
@@ -60,6 +61,6 @@ public class AssemblyClient extends WebSocketClient {
 
   @Override
   public void onError(Exception ex) {
-    logger.info("error: " + ex);
+    logger.info("***emotizeplugin*** error: " + ex);
   }
 }
