@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class TranscriptionWebhookClient {
   private String streamId;
-  protected static Logger logger = LoggerFactory.getLogger(AudioFrameListener.class);
+  protected static Logger logger = LoggerFactory.getLogger(EmotizeAudioFrameListener.class);
   private static String host = System.getenv("EMOTIZE_HOST");
 
   public TranscriptionWebhookClient(String streamId) {

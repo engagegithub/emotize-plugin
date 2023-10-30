@@ -12,14 +12,14 @@ import java.util.Base64;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-public class AudioFrameListener implements IFrameListener{
+public class EmotizeAudioFrameListener implements IFrameListener{
 
-	protected static Logger logger = LoggerFactory.getLogger(AudioFrameListener.class);
+	protected static Logger logger = LoggerFactory.getLogger(EmotizeAudioFrameListener.class);
 
 	private int audioFrameCount = 0;
 	private AssemblyClient wssClient;
 
-	public AudioFrameListener(AssemblyClient wssClient) {
+	public EmotizeAudioFrameListener(AssemblyClient wssClient) {
 		this.wssClient = wssClient;
 	}
 
@@ -38,22 +38,22 @@ public class AudioFrameListener implements IFrameListener{
 
 	@Override
 	public void writeTrailer(String streamId) {
-		logger.info("***emotizeplugin*** AudioFrameListener.writeTrailer() for streamId:{}", streamId);
+		logger.info("***emotizeplugin*** EmotizeAudioFrameListener.writeTrailer() for streamId:{}", streamId);
 	}
 
 	@Override
 	public void setVideoStreamInfo(String streamId, StreamParametersInfo videoStreamInfo) {
-		logger.info("***emotizeplugin*** AudioFrameListener.setVideoStreamInfo() for streamId:{}", streamId);
+		logger.info("***emotizeplugin*** EmotizeAudioFrameListener.setVideoStreamInfo() for streamId:{}", streamId);
 	}
 
 	@Override
 	public void setAudioStreamInfo(String streamId, StreamParametersInfo audioStreamInfo) {
-		logger.info("***emotizeplugin*** AudioFrameListener.setAudioStreamInfo() for streamId:{}", streamId);
+		logger.info("***emotizeplugin*** EmotizeAudioFrameListener.setAudioStreamInfo() for streamId:{}", streamId);
 	}
 
 	@Override
 	public void start() {
-		logger.info("***emotizeplugin*** AudioFrameListener.start()");
+		logger.info("***emotizeplugin*** EmotizeAudioFrameListener.start()");
 	}
 
 	public String getStats() {

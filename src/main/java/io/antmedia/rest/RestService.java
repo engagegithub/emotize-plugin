@@ -19,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 
 import io.antmedia.plugin.EmotizePlugin;
+import io.antmedia.rest.model.Result;
 
 @Component
 @Path("/emotize-plugin")
@@ -40,9 +41,9 @@ public class RestService {
 	public Response start(@PathParam("id") String id) {
 		EmotizePlugin app = getPluginApp();
 
-		app.start(id);
+		boolean result = app.register(id);
 
-		return Response.status(Status.OK).entity("").build();
+		return Response.status(Status.OK).entity(new Result(result)).build();
 	}
 
 	@GET

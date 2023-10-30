@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import io.antmedia.AntMediaApplicationAdapter;
 import io.antmedia.app.AssemblyClient;
-import io.antmedia.app.AudioFrameListener;
+import io.antmedia.app.EmotizeAudioFrameListener;
 import io.antmedia.app.TranscriptionWebhookClient;
 import io.antmedia.muxer.MuxAdaptor;
 import io.antmedia.plugin.api.IFrameListener;
@@ -30,7 +30,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 	private static String apiToken = System.getenv("ASSEMBLY_API_TOKEN");
 
 	private Vertx vertx;
-	private AudioFrameListener frameListener;
+	private EmotizeAudioFrameListener frameListener;
 	private AssemblyClient wssClient;
 	private TranscriptionWebhookClient webhookClient;
 	private ApplicationContext applicationContext;
@@ -44,62 +44,42 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 		app.addStreamListener(this);
 	}
 
-	public MuxAdaptor getMuxAdaptor(String streamId)
-	{
-		AntMediaApplicationAdapter application = getApplication();
-		MuxAdaptor selectedMuxAdaptor = null;
-
-		if(application != null)
-		{
-			Collection<MuxAdaptor> muxAdaptors = application.getMuxAdaptors();
-			for (MuxAdaptor muxAdaptor : muxAdaptors)
-			{
-				if (streamId.equals(muxAdaptor.getStreamId()))
-				{
-					selectedMuxAdaptor = muxAdaptor;
-					break;
-				}
-			}
-		}
-
-		return selectedMuxAdaptor;
-	}
-
-	public void start(String streamId) {
+	public boolean register(String streamId) {
 		AntMediaApplicationAdapter app = getApplication();
 
 		if (apiToken == null) {
 			logger.info("***emotizeplugin*** ASSEMBLY_API_TOKEN environment variable is not set.");
-			return;
+
+			return false;
 		}
+
 		try {
+			logger.info("***emotizeplugin*** start initializing components");
 			URI wssUri = new URI("wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000");
 			Map<String, String> httpHeaders = new HashMap<String, String>();
 			httpHeaders.put("Authorization", apiToken);
 
-			this.webhookClient = new TranscriptionWebhookClient(streamId);
-			this.wssClient = new AssemblyClient(wssUri, httpHeaders, webhookClient);
+			webhookClient = new TranscriptionWebhookClient(streamId);
+			wssClient = new AssemblyClient(wssUri, httpHeaders, webhookClient);
 			wssClient.connect();
 
 			String ping_message = "{\"message_type\":\"FinalTranscript\",\"audio_start\":0,\"audio_end\":1500,\"text\":\"ping\"}";
 			webhookClient.sendRequest(ping_message);
 
-			this.frameListener = new AudioFrameListener(wssClient);
+			frameListener = new EmotizeAudioFrameListener(wssClient);
 
 			app.addFrameListener(streamId, frameListener);
+
+			return true;
 		} catch (URISyntaxException e) {
 			logger.error("***emotizeplugin*** URI syntax error: " + e.getMessage());
-			return;
+
+			return false;
 		}
 	}
 
 	public AntMediaApplicationAdapter getApplication() {
 		return (AntMediaApplicationAdapter) applicationContext.getBean(AntMediaApplicationAdapter.BEAN_NAME);
-	}
-
-	public IFrameListener createCustomBroadcast(String streamId) {
-		AntMediaApplicationAdapter app = getApplication();
-		return app.createCustomBroadcast(streamId);
 	}
 
 	public String getStats() {
