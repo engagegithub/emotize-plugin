@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import io.antmedia.AntMediaApplicationAdapter;
 import io.antmedia.app.AssemblyClient;
 import io.antmedia.app.EmotizeAudioFrameListener;
+import io.antmedia.app.EmotizeAudioPacketListener;
 import io.antmedia.app.TranscriptionWebhookClient;
 import io.antmedia.plugin.api.IStreamListener;
 import io.vertx.core.Vertx;
@@ -28,6 +29,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 	private Vertx vertx;
 	private EmotizeAudioFrameListener frameListener;
+	private EmotizeAudioPacketListener packetListener;
 	private AssemblyClient wssClient;
 	private TranscriptionWebhookClient webhookClient;
 	private ApplicationContext applicationContext;
@@ -63,9 +65,10 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 			String ping_message = "{\"message_type\":\"FinalTranscript\",\"audio_start\":0,\"audio_end\":1500,\"text\":\"ping\"}";
 			webhookClient.sendRequest(ping_message);
 
-			frameListener = new EmotizeAudioFrameListener(wssClient);
+			packetListener = new EmotizeAudioPacketListener(wssClient);
 
-			app.addFrameListener(streamId, frameListener);
+			app.addPacketListener(streamId, packetListener);
+			// app.addFrameListener(streamId, frameListener);
 
 			return true;
 		} catch (URISyntaxException e) {
