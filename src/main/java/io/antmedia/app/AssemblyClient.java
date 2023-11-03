@@ -37,8 +37,6 @@ public class AssemblyClient extends WebSocketClient {
 
   @Override
   public void onMessage(String message) {
-    logger.info("***emotizeplugin*** received: " + message);
-
     if (message.contains("SessionBegins")) {
       logger.info("***emotizeplugin*** Real time transcription is starting");
     } else if (message.contains("FinalTranscript")) {

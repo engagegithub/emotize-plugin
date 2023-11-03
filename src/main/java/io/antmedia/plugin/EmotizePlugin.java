@@ -3,7 +3,6 @@ package io.antmedia.plugin;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -17,8 +16,6 @@ import io.antmedia.AntMediaApplicationAdapter;
 import io.antmedia.app.AssemblyClient;
 import io.antmedia.app.EmotizeAudioFrameListener;
 import io.antmedia.app.TranscriptionWebhookClient;
-import io.antmedia.muxer.MuxAdaptor;
-import io.antmedia.plugin.api.IFrameListener;
 import io.antmedia.plugin.api.IStreamListener;
 import io.vertx.core.Vertx;
 
