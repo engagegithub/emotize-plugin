@@ -66,8 +66,6 @@ public class EmotizeAudioPacketListener implements IPacketListener{
       String jsonString = json.toString();
 
       wssClient.send(jsonString);
-
-      logger.info("***emotizeplugin*** Audio data sent to Assembly: " + jsonString);
     }
 
     private static String encodeToBase64(BytePointer data, int size) {

@@ -42,6 +42,8 @@ public class AssemblyClient extends WebSocketClient {
     } else if (message.contains("FinalTranscript")) {
       logger.info("***emotizeplugin*** Get transcript from AssemblyAI");
       webhookClient.sendRequest(message);
+    } else if (!message.contains("PartialTranscript")) {
+      logger.info("***emotizeplugin*** received: " + message);
     }
   }
 
