@@ -47,35 +47,39 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 	public boolean register(String streamId) {
 		AntMediaApplicationAdapter app = getApplication();
 
-		if (apiToken == null) {
-			logger.info("***emotizeplugin*** ASSEMBLY_API_TOKEN environment variable is not set.");
+		// if (apiToken == null) {
+		// 	logger.info("***emotizeplugin*** ASSEMBLY_API_TOKEN environment variable is not set.");
 
-			return false;
-		}
+		// 	return false;
+		// }
+		frameListener = new EmotizeAudioFrameListener(wssClient);
 
-		try {
-			logger.info("***emotizeplugin*** start initializing components");
-			URI wssUri = new URI("wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000");
-			Map<String, String> httpHeaders = new HashMap<String, String>();
-			httpHeaders.put("Authorization", apiToken);
+		app.addFrameListener(streamId, frameListener);
 
-			webhookClient = new TranscriptionWebhookClient(streamId);
-			wssClient = new AssemblyClient(wssUri, httpHeaders, webhookClient);
-			wssClient.connect();
+		return true;
+		// try {
+		// 	logger.info("***emotizeplugin*** start initializing components");
+		// 	URI wssUri = new URI("wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000");
+		// 	Map<String, String> httpHeaders = new HashMap<String, String>();
+		// 	httpHeaders.put("Authorization", apiToken);
 
-			String ping_message = "{\"message_type\":\"FinalTranscript\",\"audio_start\":0,\"audio_end\":1500,\"text\":\"ping\"}";
-			webhookClient.sendRequest(ping_message);
+		// 	webhookClient = new TranscriptionWebhookClient(streamId);
+		// 	wssClient = new AssemblyClient(wssUri, httpHeaders, webhookClient);
+		// 	wssClient.connect();
 
-			frameListener = new EmotizeAudioFrameListener(wssClient);
+		// 	String ping_message = "{\"message_type\":\"FinalTranscript\",\"audio_start\":0,\"audio_end\":1500,\"text\":\"ping\"}";
+		// 	webhookClient.sendRequest(ping_message);
 
-			app.addFrameListener(streamId, frameListener);
+		// 	frameListener = new EmotizeAudioFrameListener(wssClient);
 
-			return true;
-		} catch (URISyntaxException e) {
-			logger.error("***emotizeplugin*** URI syntax error: " + e.getMessage());
+		// 	app.addFrameListener(streamId, frameListener);
 
-			return false;
-		}
+		// 	return true;
+		// } catch (URISyntaxException e) {
+		// 	logger.error("***emotizeplugin*** URI syntax error: " + e.getMessage());
+
+		// 	return false;
+		// }
 	}
 
 	public AntMediaApplicationAdapter getApplication() {

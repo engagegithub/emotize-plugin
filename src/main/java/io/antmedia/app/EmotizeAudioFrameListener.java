@@ -26,13 +26,15 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 	@Override
 	public AVFrame onAudioFrame(String streamId, AVFrame audioFrame) {
 		audioFrameCount++;
-		sendAVFrameToWssClient(audioFrame);
+		logger.info("***emotizeplugin*** TRIGGERED audio frame listener");
+		// sendAVFrameToWssClient(audioFrame);
 
 		return audioFrame;
 	}
 
 	@Override
 	public AVFrame onVideoFrame(String streamId, AVFrame videoFrame) {
+		logger.info("***emotizeplugin*** TRIGGERED video frame listener");
 		return videoFrame;
 	}
 
