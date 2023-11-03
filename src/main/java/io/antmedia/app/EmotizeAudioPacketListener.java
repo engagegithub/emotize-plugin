@@ -4,7 +4,7 @@ import io.antmedia.plugin.api.IPacketListener;
 import io.antmedia.plugin.api.StreamParametersInfo;
 
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
-
+import org.bytedeco.javacpp.BytePointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,22 +57,23 @@ public class EmotizeAudioPacketListener implements IPacketListener{
 		return "packets:"+packetCount;
 	}
 
-  private void sendAVPacketToWssClient(AVPacket packet) {
-    byte[] packetData = packet.data().asByteBuffer().array();
-    int packetSize = packet.size();
+    private void sendAVPacketToWssClient(AVPacket packet) {
+      // Encode the byte array to base64
+      String base64Data = encodeToBase64(packet.data(), packet.size());
 
-    byte[] subArray = new byte[packetSize];
-    System.arraycopy(packetData, 0, subArray, 0, packetSize);
+      JsonObject json = new JsonObject();
+      json.add("audio_data", new JsonPrimitive(base64Data));
+      String jsonString = json.toString();
 
-    // Encode the byte array to base64
-    String base64Data = Base64.getEncoder().encodeToString(subArray);
+      wssClient.send(jsonString);
 
-    JsonObject json = new JsonObject();
-    json.add("audio_data", new JsonPrimitive(base64Data));
-    String jsonString = json.toString();
+      logger.info("***emotizeplugin*** Audio data sent to Assembly: " + jsonString);
+    }
 
-    wssClient.send(jsonString);
+    private static String encodeToBase64(BytePointer data, int size) {
+      byte[] encodedData = new byte[size];
+      data.position(0).get(encodedData);
 
-    logger.info("***emotizeplugin*** Audio data sent to Assembly: " + jsonString);
-  }
+      return Base64.getEncoder().encodeToString(encodedData);
+    }
 }
