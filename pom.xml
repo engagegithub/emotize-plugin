@@ -168,6 +168,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+				<groupId>com.assemblyai</groupId>
+				<artifactId>assemblyai-java</artifactId>
+				<version>0.0.5-beta2</version>
+				<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>

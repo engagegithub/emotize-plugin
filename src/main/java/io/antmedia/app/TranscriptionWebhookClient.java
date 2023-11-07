@@ -7,6 +7,9 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.assemblyai.api.types.FinalTranscript;
+import com.google.gson.Gson;
+
 public class TranscriptionWebhookClient {
   private String streamId;
   protected static Logger logger = LoggerFactory.getLogger(EmotizeAudioFrameListener.class);
@@ -16,25 +19,29 @@ public class TranscriptionWebhookClient {
     this.streamId = streamId;
   }
 
-  public void sendRequest(String message) {
+  public void sendRequest(FinalTranscript finalTranscript) {
     try {
-        URL url = new URL(host + "/webhooks/ant_media/transcription");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      URL url = new URL(host + "/webhooks/ant_media/transcription");
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json");
+      connection.setRequestMethod("POST");
+      connection.setRequestProperty("Content-Type", "application/json");
 
-        String requestBody = String.format("{\"stream_id\": \"%s\", \"message\": %s}", streamId, message);
+      logger.info("***emotizeplugin*** Sending finalTranscript: " + finalTranscript);
 
-        byte[] messageBytes = requestBody.getBytes();
-        connection.setDoOutput(true);
+      Gson gson = new Gson();
+      String message = gson.toJson(finalTranscript);
+      String requestBody = String.format("{\"stream_id\": \"%s\", \"message\": %s}", streamId, message);
 
-        try (OutputStream os = connection.getOutputStream()) {
-          os.write(messageBytes, 0, messageBytes.length);
-        }
+      byte[] messageBytes = requestBody.getBytes();
+      connection.setDoOutput(true);
 
-        logger.info("***emotizeplugin*** Obtaining webhook request. Code: " + connection.getResponseCode());
-      } catch (Exception e) {
+      try (OutputStream os = connection.getOutputStream()) {
+        os.write(messageBytes, 0, messageBytes.length);
+      }
+
+      logger.info("***emotizeplugin*** Obtaining webhook request. Code: " + connection.getResponseCode());
+    } catch (Exception e) {
       logger.error("***emotizeplugin*** Failed to obtain request. Ex: " + e);
     }
   }

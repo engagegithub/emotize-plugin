@@ -16,13 +16,8 @@ import com.google.gson.JsonPrimitive;
 public class EmotizeAudioPacketListener implements IPacketListener{
 
   private int packetCount = 0;
-  private AssemblyClient wssClient;
 
 	protected static Logger logger = LoggerFactory.getLogger(EmotizeAudioPacketListener.class);
-
-  public EmotizeAudioPacketListener(AssemblyClient wssClient) {
-		this.wssClient = wssClient;
-	}
 
 	@Override
 	public void writeTrailer(String streamId) {
@@ -65,7 +60,7 @@ public class EmotizeAudioPacketListener implements IPacketListener{
       json.add("audio_data", new JsonPrimitive(base64Data));
       String jsonString = json.toString();
 
-      wssClient.send(jsonString);
+      // wssClient.send(jsonString);
     }
 
     private static String encodeToBase64(BytePointer data, int size) {
