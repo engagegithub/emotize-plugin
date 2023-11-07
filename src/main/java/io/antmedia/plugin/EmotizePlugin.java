@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import com.assemblyai.api.RealtimeTranscriber;
+
 import io.antmedia.AntMediaApplicationAdapter;
 import io.antmedia.app.EmotizeAudioFrameListener;
 import io.antmedia.app.EmotizeAudioPacketListener;
@@ -28,8 +30,10 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 	private Vertx vertx;
 	private EmotizeAudioFrameListener frameListener;
-	private TranscriptionWebhookClient webhookClient;
 	private ApplicationContext applicationContext;
+
+	private TranscriptionWebhookClient webhookClient;
+	private RealtimeTranscriber transcriber;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -43,20 +47,33 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 	public boolean register(String streamId) {
 		logger.info("***emotizeplugin*** start initializing components");
 
-		AntMediaApplicationAdapter app = getApplication();
+		try {
+			AntMediaApplicationAdapter app = getApplication();
 
-		if (apiToken == null) {
-			logger.info("***emotizeplugin*** ASSEMBLY_API_TOKEN environment variable is not set.");
+			if (apiToken == null) {
+				logger.info("***emotizeplugin*** ASSEMBLY_API_TOKEN environment variable is not set.");
+
+				return false;
+			}
+
+			this.webhookClient = new TranscriptionWebhookClient(streamId);
+			this.transcriber = RealtimeTranscriber.builder()
+				.apiKey(apiToken)
+				.onSessionStart(_m -> logger.info("***emotizeplugin*** Real time transcription is starting"))
+				.onError(e -> logger.info("***emotizeplugin*** error: " + e))
+				.onFinalTranscript(finalTranscript -> webhookClient.sendRequest(finalTranscript))
+				.build();
+
+			frameListener = new EmotizeAudioFrameListener(transcriber);
+
+			app.addFrameListener(streamId, frameListener);
+
+			return true;
+		} catch (Exception e) {
+			logger.error("***emotizeplugin*** Failed to obtain request. Ex: " + e);
 
 			return false;
 		}
-
-		webhookClient = new TranscriptionWebhookClient(streamId);
-		frameListener = new EmotizeAudioFrameListener(webhookClient);
-
-		app.addFrameListener(streamId, frameListener);
-
-		return true;
 	}
 
 	public AntMediaApplicationAdapter getApplication() {
@@ -74,6 +91,8 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 	@Override
 	public void streamFinished(String streamId) {
+		transcriber.close();
+
 		logger.info("***************emotizeplugin Stream Finished: {} ***************", streamId);
 	}
 

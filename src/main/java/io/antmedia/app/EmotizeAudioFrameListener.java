@@ -16,16 +16,9 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 
 	private int audioFrameCount = 0;
 	private RealtimeTranscriber transcriber;
-	private TranscriptionWebhookClient webhookClient;
 
-	public EmotizeAudioFrameListener(TranscriptionWebhookClient webhookClient) {
-		this.webhookClient = webhookClient;
-		this.transcriber = RealtimeTranscriber.builder()
-			.apiKey(System.getenv("ASSEMBLY_API_TOKEN"))
-			.onSessionStart(_m -> logger.info("***emotizeplugin*** Real time transcription is starting"))
-			.onError(e -> logger.info("***emotizeplugin*** error: " + e))
-			.onFinalTranscript(finalTranscript -> webhookClient.sendRequest(finalTranscript))
-			.build();
+	public EmotizeAudioFrameListener(RealtimeTranscriber transcriber) {
+		this.transcriber = transcriber;
 	}
 
 	@Override
@@ -66,16 +59,20 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 	}
 
 	private void sendAVFrameToWssClient(AVFrame avFrame) {
-		if (avFrame.data(0) != null && avFrame.linesize(0) > 0) {
-			// Get the audio data as a BytePointer
-			int linesize = avFrame.linesize(0);
-			byte[] audioData = new byte[linesize];
+		try {
+			if (avFrame.data(0) != null && avFrame.linesize(0) > 0) {
+				// Get the audio data as a BytePointer
+				int linesize = avFrame.linesize(0);
+				byte[] audioData = new byte[linesize];
 
-			avFrame.data(0).get(audioData, 0, linesize);
+				avFrame.data(0).get(audioData, 0, linesize);
 
-			transcriber.sendAudio(audioData);
-		} else {
-			logger.info("***emotizeplugin*** Empty audio data");
+				transcriber.sendAudio(audioData);
+			} else {
+				logger.info("***emotizeplugin*** Empty audio data");
+			}
+		} catch (Exception e) {
+			logger.error("***emotizeplugin*** Failed to sent AVFrame to Assembly. Ex: " + e);
 		}
 	}
 }

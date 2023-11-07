@@ -52,21 +52,21 @@ public class EmotizeAudioPacketListener implements IPacketListener{
 		return "packets:"+packetCount;
 	}
 
-    private void sendAVPacketToWssClient(AVPacket packet) {
-      // Encode the byte array to base64
-      String base64Data = encodeToBase64(packet.data(), packet.size());
+	private void sendAVPacketToWssClient(AVPacket packet) {
+		// Encode the byte array to base64
+		String base64Data = encodeToBase64(packet.data(), packet.size());
 
-      JsonObject json = new JsonObject();
-      json.add("audio_data", new JsonPrimitive(base64Data));
-      String jsonString = json.toString();
+		JsonObject json = new JsonObject();
+		json.add("audio_data", new JsonPrimitive(base64Data));
+		String jsonString = json.toString();
 
-      // wssClient.send(jsonString);
-    }
+		// wssClient.send(jsonString);
+	}
 
-    private static String encodeToBase64(BytePointer data, int size) {
-      byte[] encodedData = new byte[size];
-      data.position(0).get(encodedData);
+	private static String encodeToBase64(BytePointer data, int size) {
+		byte[] encodedData = new byte[size];
+		data.position(0).get(encodedData);
 
-      return Base64.getEncoder().encodeToString(encodedData);
-    }
+		return Base64.getEncoder().encodeToString(encodedData);
+	}
 }
