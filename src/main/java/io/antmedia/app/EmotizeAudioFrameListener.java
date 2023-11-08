@@ -65,7 +65,7 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 			int linesize = avFrame.linesize(0);
 			byte[] audioData = new byte[linesize];
 
-			if (buffer != null && linesize > 0) {
+			if (buffer != null && !buffer.isNull() && linesize > 0) {
 				buffer.get(audioData, 0, linesize);
 
 				logger.info("***emotizeplugin*** transcriber: " + transcriber);
@@ -74,7 +74,8 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 				logger.info("***emotizeplugin*** Empty audio data");
 			}
 		} catch (Exception e) {
-			logger.error("***emotizeplugin*** Failed to sent AVFrame to Assembly. Ex: " + e);
+			e.printStackTrace();
+			// logger.error("***emotizeplugin*** Failed to sent AVFrame to Assembly. Ex: " + e);
 		}
 	}
 }
