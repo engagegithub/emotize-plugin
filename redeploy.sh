@@ -1,6 +1,7 @@
 #!/bin/sh
-AMS_DIR=~/softwares/ant-media-server
-mvn clean install -Dmaven.javadoc.skip=true -Dmaven.test.skip=true -Dgpg.skip=true
+# mvn clean install -Dmaven.javadoc.skip=true -Dmaven.test.skip=true -Dgpg.skip=true
+
+AMS_DIR=~/usr/local/antmedia
 OUT=$?
 
 if [ $OUT -ne 0 ]; then
