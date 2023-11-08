@@ -2,6 +2,7 @@ package io.antmedia.app;
 
 import org.bytedeco.ffmpeg.avutil.AVFrame;
 
+import org.bytedeco.javacpp.BytePointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,18 +61,15 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 
 	private void sendAVFrameToWssClient(AVFrame avFrame) {
 		try {
-			if (avFrame.data(0) != null && avFrame.linesize(0) > 0) {
-				// Get the audio data as a BytePointer
-				int linesize = avFrame.linesize(0);
-				byte[] audioData = new byte[linesize];
+			BytePointer buffer = avFrame.data(0);
+			int linesize = avFrame.linesize(0);
+			byte[] audioData = new byte[linesize];
 
-				if (avFrame.data(0) != null) {
-					avFrame.data(0).get(audioData, 0, linesize);
+			if (buffer != null && !buffer.isNull() && buffer.capacity() > 0 && linesize > 0) {
+				buffer.get(audioData, 0, linesize);
 
-					transcriber.sendAudio(audioData);
-				} else {
-					logger.info("***emotizeplugin*** Empty audio data");
-				}
+				logger.info("***emotizeplugin*** transcriber: " + transcriber);
+				transcriber.sendAudio(audioData);
 			} else {
 				logger.info("***emotizeplugin*** Empty audio data");
 			}
