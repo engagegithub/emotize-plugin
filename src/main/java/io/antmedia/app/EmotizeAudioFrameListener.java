@@ -65,7 +65,7 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 			int linesize = avFrame.linesize(0);
 			byte[] audioData = new byte[linesize];
 
-			if (buffer != null && !buffer.isNull() && buffer.capacity() > 0 && linesize > 0) {
+			if (buffer != null && linesize > 0) {
 				buffer.get(audioData, 0, linesize);
 
 				logger.info("***emotizeplugin*** transcriber: " + transcriber);
