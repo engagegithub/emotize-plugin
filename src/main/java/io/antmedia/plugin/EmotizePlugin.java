@@ -65,10 +65,11 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 			String ping_message = "{\"message_type\":\"FinalTranscript\",\"audio_start\":0,\"audio_end\":1500,\"text\":\"ping\"}";
 			webhookClient.sendRequest(ping_message);
 
-			packetListener = new EmotizeAudioPacketListener(wssClient);
+			// packetListener = new EmotizeAudioPacketListener(wssClient);
+			frameListener = new EmotizeAudioFrameListener(wssClient);
 
-			app.addPacketListener(streamId, packetListener);
-			// app.addFrameListener(streamId, frameListener);
+			// app.addPacketListener(streamId, packetListener);
+			app.addFrameListener(streamId, frameListener);
 
 			return true;
 		} catch (URISyntaxException e) {
