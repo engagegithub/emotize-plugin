@@ -67,11 +67,11 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 
 				if (avFrame.data(0) != null) {
 					avFrame.data(0).get(audioData, 0, linesize);
+
+					transcriber.sendAudio(audioData);
 				} else {
 					logger.info("***emotizeplugin*** Empty audio data");
 				}
-
-				transcriber.sendAudio(audioData);
 			} else {
 				logger.info("***emotizeplugin*** Empty audio data");
 			}
