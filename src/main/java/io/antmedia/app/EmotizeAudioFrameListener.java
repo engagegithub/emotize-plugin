@@ -1,5 +1,7 @@
 package io.antmedia.app;
 
+import static org.bytedeco.ffmpeg.global.avutil.av_get_bytes_per_sample;
+
 import org.bytedeco.ffmpeg.avutil.AVFrame;
 import org.bytedeco.javacpp.BytePointer;
 
@@ -16,6 +18,7 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 	protected static Logger logger = LoggerFactory.getLogger(EmotizeAudioFrameListener.class);
 
 	private int audioFrameCount = 0;
+	private int loggerCount = 0;
 	private RealtimeTranscriber transcriber;
 
 	public EmotizeAudioFrameListener(RealtimeTranscriber transcriber) {
@@ -61,19 +64,20 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 
 	private void sendAVFrameToWssClient(AVFrame avFrame) {
 		try {
+			int samples = avFrame.nb_samples();
+			int data_size = av_get_bytes_per_sample(avFrame.format()) * samples;
 			BytePointer buffer = avFrame.data(0);
-			int linesize = avFrame.linesize(0);
-			byte[] audioData = new byte[linesize];
+			byte[] byteData = new byte[data_size];
 
-			logger.info("***emotizeplugin*** ch_layout:" + avFrame.ch_layout());
-			logger.info("***emotizeplugin*** format:" + avFrame.format());
-			logger.info("***emotizeplugin*** nb_samples:" + avFrame.nb_samples());
-			logger.info("***emotizeplugin*** sample_rate:" + avFrame.sample_rate());
+			if (buffer != null && !buffer.isNull()) {
+				buffer.get(byteData);
 
-			if (buffer != null && !buffer.isNull() && linesize > 0) {
-				buffer.get(audioData, 0, linesize);
+				transcriber.sendAudio(byteData);
+				if (loggerCount < 50) {
+					logger.info("***emotizeplugin*** audio data sent" + byteData);
 
-				transcriber.sendAudio(audioData);
+					loggerCount++;
+				}
 			} else {
 				logger.info("***emotizeplugin*** Empty audio data");
 			}

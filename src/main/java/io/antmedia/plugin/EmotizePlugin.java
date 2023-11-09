@@ -59,6 +59,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 			this.webhookClient = new TranscriptionWebhookClient(streamId);
 			this.transcriber = RealtimeTranscriber.builder()
 				.apiKey(apiToken)
+				.sampleRate(44_100)
 				.onSessionStart(_m -> logger.info("***emotizeplugin*** Real time transcription is starting"))
 				.onError(e -> logger.info("***emotizeplugin*** error: " + e))
 				.onFinalTranscript(finalTranscript -> webhookClient.sendRequest(finalTranscript))
