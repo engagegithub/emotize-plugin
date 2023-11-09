@@ -93,15 +93,15 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 				wssClient.send(jsonString);
 
 				if (loggerCount < 50) {
-					logger.info("***emotizeplugin*** audio data sent" + byteData);
+					logger.info("audio data sent" + byteData);
 
 					loggerCount++;
 				}
 			} else {
-				logger.info("***emotizeplugin*** Empty audio data");
+				logger.info("Empty audio data");
 			}
 		} catch (Exception e) {
-			logger.error("***emotizeplugin*** Failed to sent AVFrame to Assembly. Ex: " + e);
+			logger.error("Failed to sent AVFrame to Assembly. Ex: " + e);
 
 			e.printStackTrace();
 		}

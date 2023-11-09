@@ -38,7 +38,7 @@ public class AssemblyClient extends WebSocketClient {
   @Override
   public void onMessage(String message) {
     if (message.contains("SessionBegins")) {
-      logger.info("***emotizeplugin*** Real time transcription is starting");
+      logger.info("***emotizeplugin*** Real time transcription is starting. Data:" + message);
     } else if (message.contains("FinalTranscript")) {
       logger.info("***emotizeplugin*** Get transcript from AssemblyAI");
       webhookClient.sendRequest(message);
