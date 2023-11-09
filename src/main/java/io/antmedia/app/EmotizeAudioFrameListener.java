@@ -69,7 +69,7 @@ public class EmotizeAudioFrameListener implements IFrameListener{
 			BytePointer buffer = avFrame.data(0);
 			byte[] byteData = new byte[data_size];
 
-			if (buffer != null && !buffer.isNull()) {
+			if (buffer != null) {
 				buffer.get(byteData);
 
 				transcriber.sendAudio(byteData);
