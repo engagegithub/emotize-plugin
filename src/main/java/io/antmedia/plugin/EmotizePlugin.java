@@ -54,7 +54,7 @@ public class EmotizePlugin implements ApplicationContextAware, IStreamListener{
 
 		try {
 			logger.info("***emotizeplugin*** start initializing components");
-			URI wssUri = new URI("wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000");
+			URI wssUri = new URI("wss://api.assemblyai.com/v2/realtime/ws?sample_rate=44100");
 			Map<String, String> httpHeaders = new HashMap<String, String>();
 			httpHeaders.put("Authorization", apiToken);
 
